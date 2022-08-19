@@ -24,6 +24,7 @@ app.use(function (err, _req, res, _next) {
     .send({ code: 500, messgae: "Internal Server error" });
 });
 
+
 app.listen(port, () => {
   logger("info", "", `Express server started on port ${port}`);
   console.log(`Express server started on port ${port}`);

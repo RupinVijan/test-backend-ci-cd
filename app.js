@@ -1,54 +1,31 @@
-const cors = require("cors");
-const express = require("express");
-const helmet = require("helmet");
-const cookieSession = require('cookie-session')
+const app = require("./appp");
+const logger = require("./loggingFunction");
+const port =  2000;
 
-var dotenv = require('dotenv')
-dotenv.config()
+if (!("toJSON" in Error.prototype))
+  Object.defineProperty(Error.prototype, "toJSON", {
+    value: function () {
+      var alt = {};
 
-const blogRouter = require("./routes/blog.route");
+      Object.getOwnPropertyNames(this).forEach(function (key) {
+        alt[key] = this[key];
+      }, this);
 
-const app = express();
-const bodyParser = require("body-parser");
+      return alt;
+    },
+    configurable: true,
+    writable: true,
+  });
 
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
-const _db = require("./mongodb_conn");
-
-const passport = require("passport");
-require('./controllers/passport.controller')
-
-app.use(cookieSession({
-    maxAge: 48 * 60 * 60 * 100,
-    keys: ["hello"]
-}))
-
-app.use(passport.initialize())
-app.use(passport.session())
-
-//routes
-
-app.use("/blogs", require("./routes/blog.route"));
-app.use('/', require('./routes/index.route'));
-// app.use('/users', require('./routes/users')); 
-app.use('/teacher', require('./routes/teacher.route')); 
-app.use('/admin', require('./routes/admin.route'));
-app.use('/student', require('./routes/student.route'));
-app.use('/auth', require('./routes/signup.route'));
-app.use('/course', require('./routes/course.route'));
-app.use("/language",require("./routes/language.route"))
-app.use('/review', require('./routes/review.route'));
-app.use('/availability', require('./routes/availability.route'));
-
-app.use((_req, res) => {
-    res
-        .status(404)
-        .send({code: "404", messgae: "Resource Not Found"});
+app.use(function (err, _req, res, _next) {
+  console.log(err);
+  res
+    .status(err.status || 500)
+    .send({ code: 500, messgae: "Internal Server error" });
 });
 
-module.exports = app;
+
+app.listen(port, () => {
+  logger("info", "", `Express server started on port ${port}`);
+  console.log(`Express server started on port ${port}`);
+});

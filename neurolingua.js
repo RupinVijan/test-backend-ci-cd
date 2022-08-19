@@ -1,31 +1,25 @@
-const app = require("./app");
-const logger = require("./loggingFunction");
-const port = process.env.PORT || 8080;
+const express = require('express');
+const app = express();
+const hostname = '127.0.0.1'; // Your server ip address
+const port = 8080;
 
-if (!("toJSON" in Error.prototype))
-  Object.defineProperty(Error.prototype, "toJSON", {
-    value: function () {
-      var alt = {};
+const version = '2,999,999';
 
-      Object.getOwnPropertyNames(this).forEach(function (key) {
-        alt[key] = this[key];
-      }, this);
+app.get('/', (req, res) => {
+    // set response content    
+        res.send(`<html>
+                    <body>
+                        <h1 style="color:blue;text-align: center;margin-top: 100px;"> [Version ${version}]: THis is AMAZING!!! Like & Subscribe!</h1>
+                        <div style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%)">
+                            <img src="https://picsum.photos/400/400?random=1">
+                        </div>
+                    </body>
+                   </html>`);
+ 
+  console.log(`[Version ${version}]: New request => http://${hostname}:${port}`+req.url);
 
-      return alt;
-    },
-    configurable: true,
-    writable: true,
-  });
-
-app.use(function (err, _req, res, _next) {
-  console.log(err);
-  res
-    .status(err.status || 500)
-    .send({ code: 500, messgae: "Internal Server error" });
-});
-
+})
 
 app.listen(port, () => {
-  logger("info", "", `Express server started on port ${port}`);
-  console.log(`Express server started on port ${port}`);
-});
+    console.log(`[Version ${version}]: Server running at http://${hostname}:${port}/`);
+})
